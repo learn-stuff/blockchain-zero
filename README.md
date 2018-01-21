@@ -24,6 +24,13 @@ Block format:
 lein run
 ```
 
+## Or with Docker
+
+```sh
+docker build -t blockchain-zero .
+docker run -it --rm -p 8080:8080 blockchain-zero
+```
+
 ## Add data
 
 ```sh
