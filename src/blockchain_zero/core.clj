@@ -11,8 +11,8 @@
             [blockchain-zero.data :as bc-data]))
 
 (defroutes handlers
-  (GET "/last_blocks/:number{[0-9]+}" [number]
-       (response (bc/take-last-blocks (Integer/parseInt number))))
+  (GET "/last_blocks/:count{[0-9]+}" [count]
+       (response (bc/take-last-blocks (Integer/parseInt count))))
   (POST "/add_data" request
         (if-let [data (get-in request [:params "data"])]
           (do

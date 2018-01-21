@@ -1,14 +1,20 @@
 # blockchain-zero
 
-A Clojure library designed to ... well, that part is up to you.
+Implemented some ideas at the heart of blockchain.
 
-## Usage
+Server is running on http://localhost:8080 and has 2 endpoints:
 
-FIXME
+* *POST /add_data* add data in json format `{ data: "string of data" }`
+* *GET /last_blocks/:count* shows `count` of last blocks
 
-## License
+## Run
 
-Copyright © 2018 FIXME
+```sh
+lein run
+```
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+## Add data
+
+```sh
+curl -H "Content-Type: application/json" -d '{"data":"New data"}' http://localhost:8080/add_data
+```
