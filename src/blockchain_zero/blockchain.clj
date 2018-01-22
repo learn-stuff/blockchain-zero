@@ -29,9 +29,7 @@
   (let [previous-hash (previous-block-hash blockchain)]
     (swap! blockchain conj (make-block previous-hash rows))))
 
-(defn add-data
-  [rows]
-  (add-data-to-blockchain blockchain rows))
+(def add-data (partial add-data-to-blockchain blockchain))
 
 (defn take-last-blocks
   [n]
