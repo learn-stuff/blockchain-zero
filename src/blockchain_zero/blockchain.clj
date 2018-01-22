@@ -3,10 +3,7 @@
             [clj-time.coerce :as tc]
             [digest]))
 
-(defrecord Block [previous_block_hash
-                  rows
-                  timestamp
-                  block_hash])
+(defrecord Block [previous_block_hash rows timestamp block_hash])
 
 (def blockchain (atom []))
 
