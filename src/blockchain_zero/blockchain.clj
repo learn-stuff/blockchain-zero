@@ -5,7 +5,8 @@
 
 (defrecord Block [previous_block_hash rows timestamp block_hash])
 
-(def blockchain (atom []))
+(def blockchain (atom {}))
+(def last-hash (atom "0"))
 
 (defn make-block
  [previous-block-hash rows]
@@ -15,19 +16,23 @@
         block-hash (digest/sha-256 digest-sum)]
     (->Block previous-block-hash rows timestamp block-hash)))
 
-(defn previous-block-hash
-  [blockchain]
-  (let [chain @blockchain
-        first-block? (zero? (count chain))]
-    (if first-block? "0" (:block_hash (last chain)))))
-
 (defn add-data-to-blockchain
   [blockchain rows]
-  (let [previous-hash (previous-block-hash blockchain)]
-    (swap! blockchain conj (make-block previous-hash rows))))
+  (let [new-block (make-block @last-hash rows)
+        new-block-hash (:block_hash new-block)]
+    (swap! blockchain assoc new-block-hash new-block)
+    (reset! last-hash new-block-hash)))
 
 (def add-data (partial add-data-to-blockchain blockchain))
 
 (defn take-last-blocks
   [n]
-  (take-last n @blockchain))
+  (loop [blocks []
+         count n
+         hash @last-hash]
+    (let [next-block (get @blockchain hash)]
+      (if (or (= count 0) (= hash "0"))
+        (reverse blocks)
+        (recur (conj blocks next-block)
+               (dec count)
+               (:previous_block_hash next-block))))))
