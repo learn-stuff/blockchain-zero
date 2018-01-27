@@ -4,10 +4,13 @@
             [digest]
             [blockchain-zero.store :as store]))
 
-(defrecord Block [previous_block_hash rows timestamp block_hash])
+(defrecord Block [hash prev_hash ts tx])
 
 (def blockchain (atom {}))
 (def last-hash (atom "0"))
+
+(defn tx->str [value]
+  (apply str (map value [:from :to :amount])))
 
 (defn start []
   (add-watch blockchain :blockchain-watcher
@@ -25,21 +28,29 @@
     (reset! last-hash hash)))
 
 (defn make-block
- [previous-block-hash rows]
-  (let [timestamp (tc/to-long (time/now))
-        rows-string (apply str rows)
-        digest-sum (str previous-block-hash rows-string timestamp)
+  [prev-hash txs]
+  (let [ts (tc/to-long (time/now))
+        txs-string (apply str (map tx->str txs))
+        digest-sum (str prev-hash txs-string ts)
         block-hash (digest/sha-256 digest-sum)]
-    (->Block previous-block-hash rows timestamp block-hash)))
+    (->Block block-hash prev-hash ts txs)))
 
 (defn add-data-to-blockchain
-  [blockchain rows]
-  (let [new-block (make-block @last-hash rows)
-        new-block-hash (:block_hash new-block)]
+  [blockchain txs]
+  (let [new-block (make-block @last-hash txs)
+        new-block-hash (:hash new-block)]
+    (swap! blockchain assoc new-block-hash new-block)
+    (reset! last-hash new-block-hash)))
+
+(defn add-transactions-to-blockchain
+  [blockchain txs]
+  (let [new-block (make-block @last-hash txs)
+        new-block-hash (:hash new-block)]
     (swap! blockchain assoc new-block-hash new-block)
     (reset! last-hash new-block-hash)))
 
 (def add-data (partial add-data-to-blockchain blockchain))
+(def add-transactions (partial add-transactions-to-blockchain blockchain))
 
 (defn take-last-blocks
   [n]
@@ -51,4 +62,4 @@
         (reverse blocks)
         (recur (conj blocks next-block)
                (dec count)
-               (:previous_block_hash next-block))))))
+               (:prev_hash next-block))))))

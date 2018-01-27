@@ -31,8 +31,8 @@ docker build -t blockchain-zero .
 docker run -it --rm -p 8080:8080 blockchain-zero
 ```
 
-## Add data
+## Add transaction
 
 ```sh
-curl -H "Content-Type: application/json" -d '{"data":"New data"}' http://localhost:8080/add_data
+curl -H "Content-Type: application/json" -d '{"from":"95", "to":"93", "amount":10}' http://localhost:8080/management/add_transaction
 ```
