@@ -16,8 +16,17 @@
 (defroutes handlers
   (GET "/blockchain/get_blocks/:count{[0-9]+}" [count]
     (response (bc/take-last-blocks (Integer/parseInt count))))
+  (POST "/blockchain/receive_update" request
+    (if-let [block-update (:params request)]
+      (do
+        (bc/receive-update block-update)
+        {:status 200})
+      {:status 422}))
   (GET "/management/sync" [count]
     (response (bc/take-all-blocks)))
+  (POST "/management/sync" []
+    (bc/sync-with-neighbors)
+    {:status 200})
   (POST "/management/add_transaction" request
     (if-let [transaction (:params request)]
       (do

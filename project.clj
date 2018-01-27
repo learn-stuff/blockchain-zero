@@ -11,5 +11,7 @@
                  [ring/ring-json "0.4.0"]
                  [digest "1.4.6"]
                  [clj-time "0.14.0"]
+                 [clj-http "2.3.0"]
+                 [cheshire "5.8.0"]
                  [com.taoensso/carmine "2.6.2"]]
   :main blockchain-zero.core)

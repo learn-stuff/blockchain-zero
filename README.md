@@ -61,7 +61,15 @@ curl http://localhost:8080/management/status
 
 ```sh
 curl http://localhost:8080/management/sync
+curl -X POST http://localhost:8080/management/sync
 ```
+
+### Receive update
+
+```sh
+curl -H "Content-Type: application/json" -d '{"sender_id":95, "block":"rofl"}' http://localhost:8080/blockchain/receive_update
+```
+
 ### Register node
 
 ```sh
@@ -69,6 +77,6 @@ curl -X POST -H "Content-Type: application/json" -d '{
     "id": 93,
     "name": "ROFLMAO",
     "url": "192.168.44.93:8080"
-}' "http://192.168.44.61:8080/add_node"
+}' "http://b54e0cb5.ngrok.io/add_node"
 
 ```

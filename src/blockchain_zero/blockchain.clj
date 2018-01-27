@@ -2,7 +2,10 @@
   (:require [clj-time.core :as time]
             [clj-time.coerce :as tc]
             [digest]
-            [blockchain-zero.store :as store]))
+            [clj-http.client :as client]
+            [cheshire.core :as json]
+            [blockchain-zero.store :as store]
+            [blockchain-zero.neighbors :as neighbors]))
 
 (defrecord Block [hash prev_hash ts tx])
 
@@ -27,6 +30,11 @@
 (defn tx->str [value]
   (apply str (map value [:from :to :amount])))
 
+(defn vec->blockchain [value]
+  (reduce (fn [acc v] (assoc acc (:hash v) v))
+          {}
+          value))
+
 (defn make-block
   [prev-hash txs]
   (let [ts (tc/to-long (time/now))
@@ -35,22 +43,25 @@
         block-hash (digest/sha-256 digest-sum)]
     (->Block block-hash prev-hash ts txs)))
 
-(defn add-data-to-blockchain
-  [blockchain txs]
+(defn add-block-to-blockchain
+  [block-hash block]
+  (println (json/generate-string block))
+  (swap! blockchain assoc block-hash block)
+  (reset! last-hash block-hash)
+  (doseq [ngbr (vals @neighbors/neighbors)]
+    (let [url (:url ngbr)]
+      (try
+        (client/post
+          (str url "/blockchain/receive_update")
+          {:body (json/generate-string {:sender_id 93 :block block})
+           :conn-timeout 1000})
+        (catch Exception e (str "caught exception: " (.getMessage e)))))))
+
+(defn add-transactions
+  [txs]
   (let [new-block (make-block @last-hash txs)
         new-block-hash (:hash new-block)]
-    (swap! blockchain assoc new-block-hash new-block)
-    (reset! last-hash new-block-hash)))
-
-(defn add-transactions-to-blockchain
-  [blockchain txs]
-  (let [new-block (make-block @last-hash txs)
-        new-block-hash (:hash new-block)]
-    (swap! blockchain assoc new-block-hash new-block)
-    (reset! last-hash new-block-hash)))
-
-(def add-data (partial add-data-to-blockchain blockchain))
-(def add-transactions (partial add-transactions-to-blockchain blockchain))
+    (add-block-to-blockchain new-block-hash new-block)))
 
 (defn take-last-blocks
   [n]
@@ -58,7 +69,7 @@
          count n
          hash @last-hash]
     (let [next-block (get @blockchain hash)]
-      (if (or (= count 0) (= hash "0"))
+      (if (or (= count 0) (= hash "0") (= hash 0))
         (reverse blocks)
         (recur (conj blocks next-block)
                (dec count)
@@ -66,3 +77,17 @@
 
 (defn take-all-blocks []
   (vals @blockchain))
+
+(defn receive-update
+  [{sender-id :sender_id block :block}]
+  (cond
+    (= @last-hash (:prev_hash block))
+    (add-block-to-blockchain (:hash block) block)))
+
+(defn sync-with-neighbors []
+  (if-let [ngbr (first (vals @neighbors/neighbors))]
+    (let [url (:url ngbr)
+          response (client/get (str url "/management/sync"), {:as :json})
+          chain (:body response)]
+      (reset! blockchain (vec->blockchain chain))
+      (reset! last-hash (:hash (last chain))))))

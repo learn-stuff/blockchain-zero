@@ -1,6 +1,8 @@
 (ns blockchain-zero.neighbors
   (:require [blockchain-zero.store :as store]))
 
+;; TODO: neighbor as record
+
 (def neighbors (atom {}))
 
 (defn start []
