@@ -10,6 +10,7 @@
             [compojure.route :as route]
             [blockchain-zero.blockchain :as bc]
             [blockchain-zero.neighbors :as neighbors]
+            [blockchain-zero.status :as status]
             [blockchain-zero.transactions :as txs]))
 
 (defroutes handlers
@@ -27,6 +28,8 @@
             (neighbors/add-neighbor neighbor)
             {:status 200})
           {:status 422}))
+  (GET "/management/status" []
+       (response (status/get-status)))
   (route/not-found ""))
 
 (def app

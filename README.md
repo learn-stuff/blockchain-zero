@@ -31,14 +31,33 @@ docker build -t blockchain-zero .
 docker run -it --rm -p 8080:8080 blockchain-zero
 ```
 
-## Add transaction
+## REST API
+
+### Add transaction
 
 ```sh
 curl -H "Content-Type: application/json" -d '{"from":"95", "to":"93", "amount":10}' http://localhost:8080/management/add_transaction
 ```
 
-## Add neighbor
+### Add neighbor
 
 ```sh
-curl -H "Content-Type: application/json" -d '{"id":"95", "url":"http://192.168.44.95:8080"}' http://localhost:8080/management/add_link
+curl -H "Content-Type: application/json" -d '{"id":95, "url":"http://192.168.44.95:8080"}' http://localhost:8080/management/add_link
+```
+
+### Get status
+
+```sh
+curl http://localhost:8080/management/status
+```
+
+### Register node
+
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{
+    "id": 93,
+    "name": "ROFLMAO",
+    "url": "192.168.44.93:8080"
+}' "http://192.168.44.61:8080/add_node"
+
 ```
