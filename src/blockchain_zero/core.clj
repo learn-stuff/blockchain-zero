@@ -9,6 +9,7 @@
             [compojure.core :refer :all]
             [compojure.route :as route]
             [blockchain-zero.blockchain :as bc]
+            [blockchain-zero.neighbors :as neighbors]
             [blockchain-zero.transactions :as txs]))
 
 (defroutes handlers
@@ -18,6 +19,12 @@
         (if-let [transaction (:params request)]
           (do
             (txs/add-transaction transaction)
+            {:status 200})
+          {:status 422}))
+  (POST "/management/add_link" request
+        (if-let [neighbor (:params request)]
+          (do
+            (neighbors/add-neighbor neighbor)
             {:status 200})
           {:status 422}))
   (route/not-found ""))
@@ -32,4 +39,5 @@
 (defn -main [& args]
   (run-server app {:port 8080})
   (bc/start)
+  (neighbors/start)
   (println "Server started on port 8080"))

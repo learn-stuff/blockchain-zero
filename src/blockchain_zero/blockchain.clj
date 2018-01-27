@@ -9,9 +9,6 @@
 (def blockchain (atom {}))
 (def last-hash (atom "0"))
 
-(defn tx->str [value]
-  (apply str (map value [:from :to :amount])))
-
 (defn start []
   (add-watch blockchain :blockchain-watcher
     (fn [_ _ _ new-state]
@@ -26,6 +23,9 @@
 
   (if-let [hash (store/extract "blockchain/hash")]
     (reset! last-hash hash)))
+
+(defn tx->str [value]
+  (apply str (map value [:from :to :amount])))
 
 (defn make-block
   [prev-hash txs]

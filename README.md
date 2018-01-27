@@ -36,3 +36,9 @@ docker run -it --rm -p 8080:8080 blockchain-zero
 ```sh
 curl -H "Content-Type: application/json" -d '{"from":"95", "to":"93", "amount":10}' http://localhost:8080/management/add_transaction
 ```
+
+## Add neighbor
+
+```sh
+curl -H "Content-Type: application/json" -d '{"id":"95", "url":"http://192.168.44.95:8080"}' http://localhost:8080/management/add_link
+```
