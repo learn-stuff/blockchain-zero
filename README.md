@@ -57,6 +57,11 @@ curl -H "Content-Type: application/json" -d '{"id":95, "url":"http://192.168.44.
 curl http://localhost:8080/management/status
 ```
 
+### Sync
+
+```sh
+curl http://localhost:8080/management/sync
+```
 ### Register node
 
 ```sh

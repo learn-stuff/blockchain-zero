@@ -63,3 +63,6 @@
         (recur (conj blocks next-block)
                (dec count)
                (:prev_hash next-block))))))
+
+(defn take-all-blocks []
+  (vals @blockchain))

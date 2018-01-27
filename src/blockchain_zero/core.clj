@@ -16,6 +16,8 @@
 (defroutes handlers
   (GET "/blockchain/get_blocks/:count{[0-9]+}" [count]
     (response (bc/take-last-blocks (Integer/parseInt count))))
+  (GET "/management/sync" [count]
+    (response (bc/take-all-blocks)))
   (POST "/management/add_transaction" request
     (if-let [transaction (:params request)]
       (do
