@@ -15,21 +15,21 @@
 
 (defroutes handlers
   (GET "/blockchain/get_blocks/:count{[0-9]+}" [count]
-       (response (bc/take-last-blocks (Integer/parseInt count))))
+    (response (bc/take-last-blocks (Integer/parseInt count))))
   (POST "/management/add_transaction" request
-        (if-let [transaction (:params request)]
-          (do
-            (txs/add-transaction transaction)
-            {:status 200})
-          {:status 422}))
+    (if-let [transaction (:params request)]
+      (do
+        (txs/add-transaction transaction)
+        {:status 200})
+      {:status 422}))
   (POST "/management/add_link" request
-        (if-let [neighbor (:params request)]
-          (do
-            (neighbors/add-neighbor neighbor)
-            {:status 200})
-          {:status 422}))
+    (if-let [neighbor (:params request)]
+      (do
+        (neighbors/add-neighbor neighbor)
+        {:status 200})
+      {:status 422}))
   (GET "/management/status" []
-       (response (status/get-status)))
+      (response (status/get-status)))
   (route/not-found ""))
 
 (def app
