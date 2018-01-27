@@ -14,7 +14,7 @@
             [blockchain-zero.transactions :as txs]))
 
 (defroutes handlers
-  (GET "/last_blocks/:count{[0-9]+}" [count]
+  (GET "/blockchain/get_blocks/:count{[0-9]+}" [count]
        (response (bc/take-last-blocks (Integer/parseInt count))))
   (POST "/management/add_transaction" request
         (if-let [transaction (:params request)]

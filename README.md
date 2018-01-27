@@ -33,6 +33,12 @@ docker run -it --rm -p 8080:8080 blockchain-zero
 
 ## REST API
 
+### Get last blocks
+
+```sh
+curl http://localhost:8080/blockchain/get_blocks/10
+```
+
 ### Add transaction
 
 ```sh
