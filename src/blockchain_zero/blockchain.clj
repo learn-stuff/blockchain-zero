@@ -1,12 +1,28 @@
 (ns blockchain-zero.blockchain
   (:require [clj-time.core :as time]
             [clj-time.coerce :as tc]
-            [digest]))
+            [digest]
+            [blockchain-zero.store :as store]))
 
 (defrecord Block [previous_block_hash rows timestamp block_hash])
 
 (def blockchain (atom {}))
 (def last-hash (atom "0"))
+
+(defn start []
+  (add-watch blockchain :blockchain-watcher
+    (fn [_ _ _ new-state]
+      (store/save "blockchain/chain" new-state)))
+
+  (add-watch last-hash :last-hash-watcher
+             (fn [_ _ _ new-state]
+               (store/save "blockchain/hash" new-state)))
+
+  (if-let [chain (store/extract "blockchain/chain")]
+    (reset! blockchain chain))
+
+  (if-let [hash (store/extract "blockchain/hash")]
+    (reset! last-hash hash)))
 
 (defn make-block
  [previous-block-hash rows]

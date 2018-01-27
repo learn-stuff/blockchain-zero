@@ -29,4 +29,5 @@
 
 (defn -main [& args]
   (run-server app {:port 8080})
+  (bc/start)
   (println "Server started on port 8080"))
