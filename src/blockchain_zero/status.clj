@@ -4,11 +4,11 @@
 
 (def id 93)
 (def node-name "ROFLMAO")
-(def ip "http://192.168.44.93:8080")
+(def url "http://192.168.44.93:8080")
 
 (defn get-status []
   {:id id
    :name node-name
    :last_hash @bc/last-hash
-   :ip ip
+   :url url
    :neighbors (keys @neighbors/neighbors)})
